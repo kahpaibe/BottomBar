@@ -5,7 +5,8 @@ A simple Python utility to create a persistent zone at the bottom of the termina
 ## Overview
 
 From [example.py](./example.py)
-<img width="756" height="1126" alt="image" src="https://github.com/user-attachments/assets/39c1cd06-003b-440f-8765-d6fbed793bcc" />
+
+<img height="300" alt="image" src="https://github.com/user-attachments/assets/39c1cd06-003b-440f-8765-d6fbed793bcc" />
 
 ## Requirements
 - Python 3.10+
@@ -56,3 +57,7 @@ with BottomBar(bar_height=3) as bar:
     bar.print_bar_line(1, "Progress: 50%")
     bar.print_bar_line(2, "Errors: 0")
 ```
+
+## Issues
+
+The library is very basic, issues will arise easily... For example, resizing the terminal while the program is running may cause display issues.
