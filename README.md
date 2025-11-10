@@ -2,6 +2,11 @@
 
 A simple Python utility to create a persistent zone at the bottom of the terminal for displaying status information, while allowing regular output above it. It makes use of ANSI escape codes to manipulate cursor position and clear lines, should allow widely compatibility across different terminal emulators.
 
+## Overview
+
+From [example.py](./example.py)
+<img width="756" height="1126" alt="image" src="https://github.com/user-attachments/assets/39c1cd06-003b-440f-8765-d6fbed793bcc" />
+
 ## Requirements
 - Python 3.10+
 
