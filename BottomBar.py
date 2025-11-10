@@ -1,5 +1,7 @@
 from typing import Any
 
+import logging
+
 class BottomBar:
     """Use of ANSI escape codes to maintain a fixed-height section at the bottom of the terminal."""
     def __init__(self, bar_height: int):
@@ -55,24 +57,60 @@ class BottomBar:
     def print_final_line(self) -> None:
         """Print a final line below the print bar, should be called when exiting."""
         print("", end='\n')  # New line at the bottom
-        
 
+class LoggingBottomBarHandler(logging.Handler):
+    """A logging-compatible handle compatible with BottomBar."""
+    def __init__(self, bar: BottomBar):
+        """A logging-compatible handle compatible with BottomBar.
+        Args:
+            bar (BottomBar): The BottomBar instance to print logs to.
+        """
+        super().__init__()
+        self.bar = bar
+
+    def emit(self, record: logging.LogRecord) -> None:
+        log_entry = self.format(record)
+        self.bar.print_line(log_entry)
     
-if __name__ == '__main__':
+if __name__ == '__main__': 
+    import time  
+    # Example usage
     with BottomBar(bar_height=4) as bar:
         N = 10
         for i in range(N//2):
+            time.sleep(0.2)
             bar.print_line(f"Main Line {i+1}")
 
-        bar.print_bar_line(0, "Bar Line 1")
+        bar.print_bar_line(0, "============== BottomBar ==============")
         bar.print_bar_line(1, "Bar Line 2")
         bar.print_bar_line(2, "Bar Line 3")
-        bar.print_bar_line(3, "Bar Line 4")
+        bar.print_bar_line(3, "=======================================")
 
         for i in range(N//2, N):
+            time.sleep(0.2)
             bar.print_line(f"Main Line {i+1}")
 
-        bar.print_bar_line(0, "Bar Line 1 bis")
         bar.print_bar_line(1, "Bar Line 2 bis")
         bar.print_bar_line(2, "Bar Line 3 bis")
-        bar.print_bar_line(3, "Bar Line 4 bis")
+        
+    # Example usage of BottomBar with logging
+    logger = logging.getLogger("BottomBarLogger")
+    logger.setLevel(logging.DEBUG)
+    # Add BottomBar handler
+    with BottomBar(bar_height=3) as bar:
+        handler = LoggingBottomBarHandler(bar)
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+        # Bar
+        bar.print_bar_line(0, "=========== Logging Bottom Bar ==========")
+        bar.print_bar_line(1, " Logs will appear above this bar. ")
+        bar.print_bar_line(2, "=========================================")
+
+        for i in range(2):
+            logger.info(f"Info message {i+1}")
+            logger.debug(f"Debug message {i+1}")
+            logger.warning(f"Warning message {i+1}")
+            logger.error(f"Error message {i+1}")
+            time.sleep(0.2)

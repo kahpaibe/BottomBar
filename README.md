@@ -15,7 +15,7 @@ From [example.py](./example.py)
 
 The user should call `bottom_bar.init()` before printing anything and `bottom_bar.print_final_line()` before exiting the program to ensure the terminal state is clean. Using a context manager is recommended to handle this automatically.
 
-Basic Example:
+**Basic Example:**
 ```python
 from BottomBar import BottomBar
 bar = BottomBar(bar_height=2)
@@ -29,7 +29,7 @@ bar.print_final_line() # Clean up the terminal before exiting
 ```
 Above example may erase last line if an exception occurs before `print_final_line()` is called. To avoid this, use a context manager or finally block.
 
-Clean Example, no context manager:
+**Clean Example**, no context manager:
 ```python
 from BottomBar import BottomBar
 bar = BottomBar(bar_height=3)
@@ -45,7 +45,7 @@ finally:
     bar.print_final_line() # Ensure terminal is cleaned up
 ```
 
-Clean Example, context manager.
+**Clean Example**, context manager.
 ```python
 from BottomBar import BottomBar
 
@@ -56,6 +56,27 @@ with BottomBar(bar_height=3) as bar:
     bar.print_bar_line(0, "Status: Running")
     bar.print_bar_line(1, "Progress: 50%")
     bar.print_bar_line(2, "Errors: 0")
+```
+
+## Logging Integration
+
+The library includes a `LoggingBottomBarHandler` class that can be used to redirect logger output to the BottomBar.
+
+**Example:**
+```python
+import logging
+from BottomBar import BottomBar, LoggingBottomBarHandler
+with BottomBar(bar_height=3) as bar:
+    logger = logging.getLogger("BottomBarLogger")
+    logger.setLevel(logging.DEBUG)
+    handler = LoggingBottomBarHandler(bar)
+    logger.addHandler(handler)
+
+    for i in range(10):
+        logger.info(f"Info message {i+1}")
+        logger.debug(f"Debug message {i+1}")
+        logger.warning(f"Warning message {i+1}")
+        logger.error(f"Error message {i+1}")
 ```
 
 ## Issues
