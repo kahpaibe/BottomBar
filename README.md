@@ -1,6 +1,6 @@
 # BottomBar
 
-A simple Python utility to create a persistent zone at the bottom of the terminal for displaying status information, while allowing regular output above it. It makes use of ANSI escape codes to manipulate cursor position and clear lines, should allow widely compatibility across different terminal emulators.
+A simple Python utility to create a persistent zone at the bottom of the terminal for displaying status information, while allowing regular output above it. It makes use of ANSI escape codes to manipulate cursor position and clear lines, should allow wide compatibility across different terminal emulators.
 
 ## Overview
 
@@ -21,7 +21,7 @@ from BottomBar import BottomBar
 bar = BottomBar(bar_height=2)
 bar.init() # Initialize the bottom bar at the start
 for i in range(5):
-    bar.print_line(f"Main Line {i+1}")
+    bar.print(f"Main Line {i+1}")
 
 bar.print_bar_line(0, "Status: Running")
 bar.print_bar_line(1, "Progress: 50%")
@@ -36,7 +36,7 @@ bar = BottomBar(bar_height=3)
 bar.init() # Initialize the bottom bar at the start
 try:
     for i in range(10):
-        bar.print_line(f"Main Line {i+1}")
+        bar.print(f"Main Line {i+1}")
     
     bar.print_bar_line(0, "Status: Running")
     bar.print_bar_line(1, "Progress: 50%")
@@ -51,7 +51,7 @@ from BottomBar import BottomBar
 
 with BottomBar(bar_height=3) as bar:
     for i in range(10):
-        bar.print_line(f"Main Line {i+1}")
+        bar.print(f"Main Line {i+1}")
     
     bar.print_bar_line(0, "Status: Running")
     bar.print_bar_line(1, "Progress: 50%")

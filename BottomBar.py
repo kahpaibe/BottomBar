@@ -26,12 +26,35 @@ class BottomBar:
             print()
         print("", end='')  # No new line at the end
 
-    def print_line(self, *content: Any) -> None:
+    def print(self, content_str: str, append_newline: bool = True, **kwargs) -> None:
         """Print a line on the top part."""
-        print(end="\n") # New line at the bottom
+        if "end" in kwargs:
+            raise ValueError("end parameter is reserved and cannot be used.")
+        # Lines to print (n)
+        lines_to_print = content_str.split('\n')
+        n = len(lines_to_print)
+
+        # New lines at the bottom
+        if append_newline: # Append newline if append_newline
+            lines_to_print.append("") 
+        
+        # Start by printing new lines at the bottom
+        for _ in range(n):
+            print(end="\n")
+        
+        # Cursor manipulation
         print(f"\033[{self._bar_height}A", end='')  # Move cursor up
-        print("\033[1L", end='')  # Insert 1 line
-        print(*content, end='')  # Print content
+        if n > 1:
+            print(f"\033[{n-1}A", end='')  # Move cursor up
+
+        # Insert n lines
+        for _ in range(n):
+            print("\033[1L", end='')
+        
+        # Print content lines
+        for line in lines_to_print:
+            print(line, **kwargs, end="\n")
+        
         print(f"\033[{self._bar_height}B", end='')  # Move cursor down
         print("\033[E", end='')  # Move cursor to beginning of line
 
@@ -70,16 +93,13 @@ class LoggingBottomBarHandler(logging.Handler):
 
     def emit(self, record: logging.LogRecord) -> None:
         log_entry = self.format(record)
-        self.bar.print_line(log_entry)
+        self.bar.print(log_entry)
     
 if __name__ == '__main__': 
     import time  
     # Example usage
     with BottomBar(bar_height=4) as bar:
-        N = 10
-        for i in range(N//2):
-            time.sleep(0.2)
-            bar.print_line(f"Main Line {i+1}")
+        N = 100
 
         bar.print_bar_line(0, "============== BottomBar ==============")
         bar.print_bar_line(1, "Bar Line 2")
@@ -88,7 +108,7 @@ if __name__ == '__main__':
 
         for i in range(N//2, N):
             time.sleep(0.2)
-            bar.print_line(f"Main Line {i+1}")
+            bar.print("\n".join([f"Main Line {i+1}, j={j}" for j in range(3)]))
 
         bar.print_bar_line(1, "Bar Line 2 bis")
         bar.print_bar_line(2, "Bar Line 3 bis")

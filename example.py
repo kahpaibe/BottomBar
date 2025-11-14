@@ -24,6 +24,8 @@ if __name__ == '__main__':
 
         for i in range(N):
             result = factorial(i)
-            bar.print_line(f"Factorial of {i} is {result}")
+            bar.print(f"Factorial of {i} is {result}")
+            out_str = "\n".join([f"j={j}" for j in range(5)])
+            bar.print(out_str)
             bar.print_bar_line(2, f" Computed : {i + 1} / {N}")
             bar.print_bar_line(3, f" Elapsed Time: {time.time() - start_time:.2f} seconds")
