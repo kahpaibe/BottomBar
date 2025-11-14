@@ -26,56 +26,59 @@ class BottomBar:
             print()
         print("", end='')  # No new line at the end
 
-    def print(self, content_str: str, append_newline: bool = True, **kwargs) -> None:
-        """Print a line on the top part."""
-        if "end" in kwargs:
-            raise ValueError("end parameter is reserved and cannot be used.")
-        # Lines to print (n)
-        lines_to_print = content_str.split('\n')
-        n = len(lines_to_print)
+    def print(self, content_str: str, **kwargs: Any) -> None:
+        """Prints given string on the top part.
+        
+        Args:
+            content_str (str): The string to print above the bottom bar. Can contain new lines.
+            **kwargs (Any): Additional keyword arguments for the print function.
 
-        # New lines at the bottom
-        if append_newline: # Append newline if append_newline
-            lines_to_print.append("") 
+        Note:
+            The 'end' parameter is reserved and cannot be used.
+        """
+        assert "end" not in kwargs, "end parameter is reserved and cannot be used."
+        n = content_str.count('\n') + 1
         
-        # Start by printing new lines at the bottom
-        for _ in range(n):
-            print(end="\n")
+        # Note: Merging several print statements to avoid flickering
+        # Cursor manipulation to insert n lines above the bar
+        str_manip_start = ""
+        str_manip_start += "\n"*n                              # Add new lines at the bottom
+        str_manip_start += f"\033[{self._bar_height + n - 1}A" # Move cursor up
+        str_manip_start += f"\033[{n}L"                        # Insert n lines
         
-        # Cursor manipulation
-        print(f"\033[{self._bar_height}A", end='')  # Move cursor up
-        if n > 1:
-            print(f"\033[{n-1}A", end='')  # Move cursor up
+        # Cursor manipulation to go back to initial cursor position
+        str_manip_end = ""
+        str_manip_end += f"\033[{self._bar_height}B"  # Move cursor
+        str_manip_end += "\033[E"                     # Move cursor to beginning of line
+        
+        # Final string payload
+        payload_str = str_manip_start + content_str + str_manip_end
+        print(payload_str, end='', **kwargs)
 
-        # Insert n lines
-        for _ in range(n):
-            print("\033[1L", end='')
-        
-        # Print content lines
-        for line in lines_to_print:
-            print(line, **kwargs, end="\n")
-        
-        print(f"\033[{self._bar_height}B", end='')  # Move cursor down
-        print("\033[E", end='')  # Move cursor to beginning of line
-
-    def print_bar_line(self, y: int, *content: Any) -> None:
-        """Print a line in the print bar at the specified y position of the bar.
+    def print_bar_line(self, y: int, content_str: str) -> None:
+        """Prints a line in the print bar at the specified y position of the bar.
         Args:
             y (int): The line number in the print bar (0-indexed, from top).
-            *content (Any): The content to print.
+            content_str (str): The content to print.
+        
+        Note:
+            content_str must be a single line without new lines.
         """
         assert 0 <= y < self._bar_height, "y must be within the print bar height"
+        assert '\n' not in content_str, "content_str must be a single line without new lines"
+
         if y == self._bar_height - 1: # Last line special case
-            print("\033[2K", end='')  # Clear line
-            print(*content, end='')  # Print content
-            print("\033[E", end='')  # Move cursor to beginning of line
+            payload_str = "\033[2K" + content_str + "\033[E"
+            print(payload_str, end='')
             return
         
-        print(f"\033[{self._bar_height - y - 1}A", end='')  # Move cursor up
-        print("\033[2K", end='') # Clear line
-        print(*content, end='') # Print content
-        print(f"\033[{self._bar_height - y - 1}B", end='') # Move cursor down
-        print("\033[E", end='')  # Move cursor to beginning of line
+        payload_str = ""
+        payload_str += f"\033[{self._bar_height - y - 1}A" # Move cursor up
+        payload_str += "\033[2K"                           # Clear line
+        payload_str += content_str                         # Add content
+        payload_str += f"\033[{self._bar_height - y - 1}B" # Move cursor down
+        payload_str += "\033[E"                            # Move cursor to beginning of line
+        print(payload_str, end='')
 
     def print_final_line(self) -> None:
         """Print a final line below the print bar, should be called when exiting."""
